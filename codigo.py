@@ -12,24 +12,28 @@ import flet as ft
 def main(pagina):
     texto = ft.Text('Bate-Papo')
     
-    text = ft.Text('Entrou no chat')
     chat = ft.Column()
 
     nome_usuario = ft.TextField(label='Escreva seu nome')
 
     def enviar_mensagem_tunel(mensagem):
-       #adicionar a mensagem no chat
-       chat.controls.append(ft.Text(mensagem))
-       pagina.update()
+       tipo = mensagem['tipo']
+       
+       if tipo == 'mensagem':
+         texto_mensagem = mensagem['texto']
+         usuario_mensagem = mensagem['usuario']
+         #adicionar a mensagem no chat
+         chat.controls.append(ft.Text(f'{usuario_mensagem}: {texto_mensagem}'))
+       else:
+         pagina.update()
        
        #túnel de mensagem
     pagina.pubsub.subscribe(enviar_mensagem_tunel)
       
     def enviar_mensagem(evento):
-       pagina.pubsub.send_all(campo_mensagem.value)
+       pagina.pubsub.send_all({'texto':campo_mensagem.value, 'usuario':nome_usuario.value, 'tipo':'mensagem'})
        #limpar o campo de mensagem
        campo_mensagem.value=''
-       pagina.remove(text)
        pagina.update()
     
     campo_mensagem = ft.TextField(label='Digite sua mensagem')
@@ -37,7 +41,7 @@ def main(pagina):
     botao_enviar_mensagem = ft.ElevatedButton('Enviar', on_click=enviar_mensagem)
     
     def entrar_popup(evento):
-       pagina.add(text)
+       pagina.pubsub.send_all({'usuario':nome_usuario, 'tipo':'entrada'})
        #adicionar o chat
        pagina.add(chat)
        #fechar popup
