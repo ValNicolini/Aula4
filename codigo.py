@@ -20,12 +20,18 @@ def main(pagina):
        tipo = mensagem['tipo']
        
        if tipo == 'mensagem':
-         texto_mensagem = mensagem['texto']
-         usuario_mensagem = mensagem['usuario']
-         #adicionar a mensagem no chat
-         chat.controls.append(ft.Text(f'{usuario_mensagem}: {texto_mensagem}'))
+            texto_mensagem = mensagem['texto']
+            usuario_mensagem = mensagem['usuario']
+            #adicionar a mensagem no chat
+            chat.controls.append(ft.Text(f'{usuario_mensagem}: {texto_mensagem}'))
        else:
-         pagina.update()
+            usuario_mensagem = mensagem['usuario']
+            #adicionar a mensagem no chat
+            chat.controls.append(ft.Text(f'{usuario_mensagem} entrou no chat',
+                                         size=12,
+                                         italic=True,
+                                         color=ft.colors.CYAN_300))
+       pagina.update()
        
        #túnel de mensagem
     pagina.pubsub.subscribe(enviar_mensagem_tunel)
@@ -41,7 +47,7 @@ def main(pagina):
     botao_enviar_mensagem = ft.ElevatedButton('Enviar', on_click=enviar_mensagem)
     
     def entrar_popup(evento):
-       pagina.pubsub.send_all({'usuario':nome_usuario, 'tipo':'entrada'})
+       pagina.pubsub.send_all({'usuario':nome_usuario.value, 'tipo':'entrada'})
        #adicionar o chat
        pagina.add(chat)
        #fechar popup
@@ -75,4 +81,5 @@ def main(pagina):
     pagina.add(botao_iniciar)
     
     
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main, view=ft.WEB_BROWSER,port=8000)
+#deploy
